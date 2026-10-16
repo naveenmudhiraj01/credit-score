@@ -1,0 +1,156 @@
+// MERGE into your existing schema. Additive fields are nullable or defaulted.
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum PaymentStatus {
+  CREATED
+  PENDING
+  PAID
+  FAILED
+}
+
+enum EmailStatus {
+  PENDING
+  SENDING
+  SENT
+  FAILED
+}
+
+enum EmailType {
+  CUSTOMER_REGISTRATION
+  ADMIN_REGISTRATION
+  CUSTOMER_PAYMENT_CONFIRMATION
+  ADMIN_PAYMENT_NOTIFICATION
+  REVIEW_APPROVED
+  REVIEW_REJECTED
+  REVIEW_INFO_REQUESTED
+}
+
+enum DeliveryStatus {
+  PENDING
+  SENDING
+  ACCEPTED // SMTP accepted the message for delivery
+  DELIVERED // Provider confirmed delivery
+  BOUNCED // Remote mailbox bounced/rejected
+  FAILED // Handoff or connection failed
+}
+
+enum SheetStatus {
+  PENDING
+  SYNCED
+  FAILED
+}
+
+enum ReviewStatus {
+  PENDING_REVIEW
+  IN_REVIEW
+  RESPONDED // legacy: "team response recorded" (pre-workflow). Treated as a completed review.
+  CLOSED // legacy
+  NOT_APPLICABLE
+  APPROVED
+  REJECTED
+  INFO_REQUESTED
+}
+
+model PaymentOrder {
+  id                String        @id @default(cuid())
+  receipt           String        @unique // human order number, e.g. ORD20261010AB12CD
+  razorpayOrderId   String        @unique
+  razorpayPaymentId String?       @unique
+  razorpaySignature String?       @db.VarChar(255)
+  product           String        @default("Product A")
+  amount            Int // paise
+  currency          String        @default("INR")
+  status            PaymentStatus @default(CREATED)
+  failureReason     String?       @db.VarChar(500)
+  customerName      String?       @db.VarChar(120)
+  customerDob       String?       @db.VarChar(20)
+  customerEmail     String?       @db.VarChar(190)
+  customerMobile    String?       @db.VarChar(20)
+  emailStatus       EmailStatus   @default(PENDING)
+  emailSentAt       DateTime?
+  sheetStatus       SheetStatus   @default(PENDING)
+  sheetSyncedAt     DateTime?
+  paidAt            DateTime?
+
+  // Consent audit trail
+  consentGiven      Boolean       @default(false)
+  consentVersion    String?       @db.VarChar(40)
+  consentText       String?       @db.VarChar(1000)
+  consentTimestamp  DateTime?
+  consentIp         String?       @db.VarChar(45)
+
+  // 72-hour Team review & response SLA
+  reviewStatus      ReviewStatus  @default(NOT_APPLICABLE)
+  reviewDeadline    DateTime?
+  reviewStartedAt   DateTime? // set only when an admin explicitly starts the review
+  reviewStartedBy   String?       @db.VarChar(120)
+  teamRespondedAt   DateTime? // time of the latest admin decision (approve / reject / request info)
+  teamResponseNotes String?       @db.Text // message to the customer for the latest decision (also emailed)
+  teamRespondedBy   String?       @db.VarChar(120)
+
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  attempts          PaymentAttempt[]
+  notifications     EmailNotification[]
+
+  @@index([status, createdAt])
+  @@index([customerEmail])
+  @@index([reviewStatus, reviewDeadline])
+}
+
+model EmailNotification {
+  id           String         @id @default(cuid())
+  orderId      String
+  order        PaymentOrder   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  emailType    EmailType
+  recipient    String         @db.VarChar(190)
+  subject      String         @db.VarChar(255)
+  status       DeliveryStatus @default(PENDING)
+  messageId    String?        @db.VarChar(255)
+  attemptCount Int            @default(0)
+  sentAt       DateTime?
+  deliveredAt  DateTime?
+  errorDetails String?        @db.VarChar(500)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  @@unique([orderId, emailType])
+  @@index([status])
+  @@index([messageId])
+}
+
+model PaymentAttempt {
+  id                String        @id @default(cuid())
+  orderId           String
+  order             PaymentOrder  @relation(fields: [orderId], references: [id], onDelete: Restrict)
+  razorpayPaymentId String?
+  status            PaymentStatus
+  source            String        @db.VarChar(20) // VERIFY | WEBHOOK
+  error             String?       @db.VarChar(500)
+  createdAt         DateTime      @default(now())
+
+  @@index([orderId])
+  @@index([razorpayPaymentId])
+}
+
+// Webhook idempotency: one row per Razorpay event id.
+model WebhookEvent {
+  id        String   @id // x-razorpay-event-id
+  event     String   @db.VarChar(80)
+  createdAt DateTime @default(now())
+}
+
+model SystemSetting {
+  key         String   @id @db.VarChar(60)
+  value       String   @db.Text
+  description String?  @db.VarChar(255)
+  updatedAt   DateTime @updatedAt
+  updatedBy   String?  @db.VarChar(120)
+}

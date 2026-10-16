@@ -1,0 +1,44 @@
+# Environment secrets
+.env
+.env.*
+!.env.example
+
+# Frontend dependencies and build output
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/dist/
+frontend/coverage/
+
+# Backend dependencies and build output
+backend/node_modules/
+backend/.next/
+backend/target/
+backend/build/
+backend/dist/
+
+# Logs
+*.log
+logs/
+
+# IDE and OS files
+.idea/
+.vscode/
+*.iml
+
+# Operating system files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Private keys and certificates
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+
+# Local database backups
+*.dump
+*.bak
+backend/*.backup

@@ -1,0 +1,216 @@
+/* AdminLogin: all selectors are prefixed "al-" and tokens are scoped to .al-page,
+   so nothing leaks into (or inherits from) the rest of your app. */
+
+.al-page {
+  --al-ink: #0b3c3a;
+  --al-ink-deep: #072a29;
+  --al-accent: #0e7c66;
+  --al-accent-hover: #0a6553;
+  --al-paper: #f4f7f6;
+  --al-surface: #ffffff;
+  --al-text: #14231f;
+  --al-muted: #55665f;
+  --al-line: #cfdad6;
+  --al-danger: #b42318;
+  --al-danger-bg: #fef3f2;
+  --al-focus: #e8a33d;
+
+  box-sizing: border-box;
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+  background: var(--al-paper);
+  color: var(--al-text);
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  line-height: 1.5;
+}
+.al-page *, .al-page *::before, .al-page *::after { box-sizing: border-box; }
+
+/* ---------- brand side ---------- */
+.al-brand {
+  background:
+    radial-gradient(120% 80% at 0% 0%, rgba(255,255,255,.07), transparent 60%),
+    var(--al-ink);
+  color: #e8f2ef;
+  display: flex;
+  align-items: center;
+  padding: 3rem clamp(2rem, 5vw, 4.5rem);
+}
+.al-brand-inner { max-width: 26rem; }
+.al-mark {
+  display: inline-grid;
+  place-items: center;
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 1rem;
+  background: rgba(255,255,255,.1);
+  border: 1px solid rgba(255,255,255,.22);
+  color: #fff;
+}
+.al-mark svg { width: 1.75rem; height: 1.75rem; }
+.al-brand-title {
+  margin: 1.75rem 0 .75rem;
+  font-size: clamp(1.75rem, 2.6vw, 2.35rem);
+  line-height: 1.15;
+  letter-spacing: -.02em;
+  font-weight: 650;
+  color: #fff;
+}
+.al-brand-copy { margin: 0; color: #b9d1cb; max-width: 24rem; }
+.al-brand-foot {
+  margin: 3rem 0 0;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255,255,255,.18);
+  font-size: .875rem;
+  color: #9fbdb6;
+}
+
+/* ---------- form side ---------- */
+.al-panel { display: grid; place-items: center; padding: 2rem 1.25rem; }
+.al-card {
+  width: 100%;
+  max-width: 27rem;
+  background: var(--al-surface);
+  border: 1px solid var(--al-line);
+  border-radius: 1.25rem;
+  padding: clamp(1.5rem, 4vw, 2.25rem);
+  box-shadow: 0 1px 2px rgba(11,60,58,.06), 0 12px 32px -12px rgba(11,60,58,.18);
+}
+.al-header { margin-bottom: 1.5rem; }
+.al-mark-small {
+  display: none;
+  width: 2.75rem; height: 2.75rem; border-radius: .8rem;
+  background: var(--al-ink); border-color: transparent; margin-bottom: 1rem;
+}
+.al-mark-small svg { width: 1.4rem; height: 1.4rem; }
+.al-title { margin: 0; font-size: 1.75rem; letter-spacing: -.02em; font-weight: 700; line-height: 1.2; }
+.al-subtitle { margin: .4rem 0 0; color: var(--al-muted); font-size: .95rem; }
+
+/* ---------- form ---------- */
+.al-form { display: grid; gap: 1.1rem; }
+.al-field { display: grid; gap: .4rem; }
+.al-field label, .al-label-row label { font-size: .875rem; font-weight: 600; }
+.al-label-row { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; }
+
+.al-page input[type='text'],
+.al-page input[type='password'] {
+  width: 100%;
+  height: 2.9rem;
+  padding: 0 .95rem;
+  font: inherit;
+  color: var(--al-text);
+  background: #fbfdfc;
+  border: 1.5px solid var(--al-line);
+  border-radius: .75rem;
+  transition: border-color .15s, box-shadow .15s, background-color .15s;
+}
+.al-page input::placeholder { color: #8a9a94; }
+.al-page input:hover:not(:disabled) { border-color: #9db3ac; }
+.al-page input:focus-visible {
+  outline: none;
+  border-color: var(--al-accent);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(232,163,61,.45);
+}
+.al-page input[aria-invalid='true'] { border-color: var(--al-danger); background: var(--al-danger-bg); }
+.al-page input:disabled { opacity: .65; cursor: not-allowed; }
+
+.al-input-wrap { position: relative; }
+.al-input-wrap input { padding-right: 3rem; }
+.al-toggle {
+  position: absolute; top: 50%; right: .35rem; transform: translateY(-50%);
+  width: 2.3rem; height: 2.3rem; display: grid; place-items: center;
+  border: 0; border-radius: .55rem; background: transparent; color: var(--al-muted); cursor: pointer;
+}
+.al-toggle svg { width: 1.25rem; height: 1.25rem; }
+.al-toggle:hover:not(:disabled) { background: #e9f0ee; color: var(--al-text); }
+.al-toggle:focus-visible { outline: 3px solid var(--al-focus); outline-offset: 0; }
+.al-toggle:disabled { cursor: not-allowed; opacity: .6; }
+
+.al-error { margin: 0; font-size: .85rem; color: var(--al-danger); }
+
+.al-alert {
+  display: flex; gap: .65rem; align-items: flex-start;
+  margin: 0 0 1.1rem; padding: .8rem .95rem;
+  background: var(--al-danger-bg); color: #7a1a12;
+  border: 1px solid #f5c2bd; border-radius: .75rem; font-size: .9rem;
+}
+.al-alert-dot { flex: none; width: .55rem; height: .55rem; margin-top: .45rem; border-radius: 50%; background: var(--al-danger); }
+
+.al-link { color: var(--al-accent); font-size: .85rem; font-weight: 600; text-decoration: none; border-radius: .25rem; }
+.al-link:hover { color: var(--al-accent-hover); text-decoration: underline; }
+.al-link:focus-visible { outline: 3px solid var(--al-focus); outline-offset: 2px; }
+
+.al-check { display: flex; align-items: center; gap: .6rem; font-size: .9rem; color: var(--al-text); cursor: pointer; width: fit-content; }
+.al-check input { width: 1.15rem; height: 1.15rem; margin: 0; accent-color: var(--al-accent); cursor: pointer; }
+.al-check input:focus-visible { outline: 3px solid var(--al-focus); outline-offset: 2px; }
+
+.al-submit {
+  display: inline-flex; align-items: center; justify-content: center; gap: .6rem;
+  height: 2.95rem; margin-top: .2rem;
+  border: 0; border-radius: .75rem;
+  background: var(--al-accent); color: #fff;
+  font: inherit; font-weight: 650; cursor: pointer;
+  transition: background-color .15s, transform .05s;
+}
+.al-submit:hover:not(:disabled) { background: var(--al-accent-hover); }
+.al-submit:active:not(:disabled) { transform: translateY(1px); }
+.al-submit:focus-visible { outline: 3px solid var(--al-focus); outline-offset: 2px; }
+.al-submit:disabled { background: #6aa797; cursor: progress; }
+
+.al-spinner {
+  width: 1.05rem; height: 1.05rem; border-radius: 50%;
+  border: 2px solid rgba(255,255,255,.45); border-top-color: #fff;
+  animation: al-spin .7s linear infinite;
+}
+@keyframes al-spin { to { transform: rotate(360deg); } }
+
+/* ---------- OAuth section ---------- */
+.al-oauth { margin-top: 1.5rem; }
+.al-divider { display: flex; align-items: center; gap: .9rem; color: var(--al-muted); font-size: .85rem; }
+.al-divider::before, .al-divider::after { content: ''; flex: 1; height: 1px; background: var(--al-line); }
+
+.al-oauth-list { list-style: none; margin: 1rem 0 0; padding: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: .65rem; }
+.al-oauth-btn {
+  width: 100%; min-height: 2.9rem; padding: 0 .85rem;
+  display: flex; align-items: center; justify-content: center; gap: .6rem;
+  background: #fff; color: var(--al-text);
+  border: 1.5px solid var(--al-line); border-radius: .75rem;
+  font: inherit; font-weight: 600; text-decoration: none; cursor: pointer;
+  transition: border-color .15s, background-color .15s;
+}
+.al-oauth-btn:hover:not(:disabled) { border-color: var(--al-accent); background: #f4faf8; }
+.al-oauth-btn:focus-visible { outline: 3px solid var(--al-focus); outline-offset: 2px; }
+.al-oauth-btn:disabled {
+  cursor: not-allowed; background: #f1f4f3; color: #6b7c76; border-style: dashed;
+}
+.al-oauth-btn:disabled .al-oauth-icon { filter: grayscale(1); opacity: .55; }
+.al-oauth-label { white-space: nowrap; }
+.al-oauth-btn:has(.al-badge) { justify-content: flex-start; }
+.al-oauth-icon { width: 1.25rem; height: 1.25rem; flex: none; }
+.al-badge {
+  margin-left: auto; flex: none; white-space: nowrap; padding: .1rem .5rem; border-radius: 999px;
+  background: #e3ebe8; color: #4a5c55; font-size: .72rem; font-weight: 600;
+}
+.al-oauth-note { margin: .8rem 0 0; font-size: .82rem; color: var(--al-muted); text-align: center; }
+
+/* ---------- responsive ---------- */
+@media (max-width: 880px) {
+  .al-page { grid-template-columns: 1fr; }
+  .al-brand { display: none; }
+  .al-panel { padding: 1.25rem 1rem 2rem; align-items: start; }
+  .al-mark-small { display: inline-grid; }
+}
+@media (max-width: 480px) {
+  .al-oauth-btn:has(.al-badge) .al-oauth-prefix { display: none; }
+}
+@media (max-width: 340px) {
+  .al-card { padding: 1.25rem; border-radius: 1rem; }
+  .al-badge { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .al-page * { transition: none !important; }
+  .al-spinner { animation-duration: 1.6s; }
+}
